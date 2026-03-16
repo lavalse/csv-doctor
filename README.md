@@ -1,73 +1,109 @@
-# React + TypeScript + Vite
+# CSV Doctor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ブラウザで完結する CSV クリーニング・変換ツールです。Shift_JIS / CP932 / UTF-8 の CSV ファイルを読み込み、自動クリーニングを施したうえで文字化けのない UTF-8 CSV としてダウンロードできます。座標列がある場合は GeoJSON (FeatureCollection) への変換・エクスポートにも対応しています。
 
-Currently, two official plugins are available:
+**すべての処理はブラウザ内で完結します。ファイルはサーバーに送信されません。**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 主な機能
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### CSV クリーニング
+| 機能 | 説明 |
+|------|------|
+| エンコーディング自動検出 | Shift_JIS / CP932 / UTF-8 (BOM あり・なし) を自動判別 |
+| 区切り文字自動検出 | カンマ / セミコロン / タブを自動判別 |
+| Unicode 正規化 (NFKC) | 全角英数字・記号を半角に統一 |
+| 不可視文字除去 | ゼロ幅スペースなどの制御文字を削除 |
+| ヘッダー・セルのトリム | 前後の空白を除去 |
+| 複数行セルの正規化 | セル内改行を統一 |
+| 空行除去 | データのない行を削除 |
+| 重複・空ヘッダーの補完 | 重複ヘッダーに連番付与、空ヘッダーを自動命名 |
 
-## Expanding the ESLint configuration
+### GeoJSON エクスポート
+- 経度・緯度列（必須）と高さ列（任意）を UI から選択
+- 選択した座標列を `Point` ジオメトリとして出力
+- 座標が無効な行は `geometry: null` で出力（行は除外されない）
+- 座標列以外のカラムは `properties` に自動格納（数値文字列は `number` 型に変換）
+- 出力形式: `GeoJSON FeatureCollection`（`application/geo+json`）
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 技術スタック
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+| 項目 | 内容 |
+|------|------|
+| フレームワーク | React 19 + TypeScript |
+| ビルドツール | Vite 8 |
+| CSV パース | PapaParse |
+| エンコーディング変換 | encoding-japanese |
+| スタイル | Plain CSS（フレームワークなし） |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## ディレクトリ構成
+
+```
+src/
+├── App.tsx                     # ルートコンポーネント・処理パイプライン
+├── types/
+│   └── csv.ts                  # 型定義 (ProcessingResult, GeoJSONExportOptions など)
+├── lib/
+│   ├── detectEncoding.ts       # エンコーディング検出
+│   ├── decodeFile.ts           # ArrayBuffer → 文字列デコード
+│   ├── normalizeText.ts        # テキストレベルの正規化
+│   ├── detectDelimiter.ts      # 区切り文字推定
+│   ├── parseCsv.ts             # CSV パース (PapaParse ラッパー)
+│   ├── normalizeHeaders.ts     # ヘッダー正規化・重複補完
+│   ├── normalizeCells.ts       # セル正規化
+│   ├── filterEmptyRows.ts      # 空行フィルタ
+│   ├── validateRows.ts         # バリデーション・警告生成
+│   ├── regenerateCsv.ts        # クリーン CSV 再生成
+│   └── generateGeojson.ts      # GeoJSON 変換・出力
+└── components/
+    ├── FileDropzone.tsx         # ファイルドロップ・選択 UI
+    ├── FileSummary.tsx          # ファイル情報サマリー
+    ├── OptionsPanel.tsx         # クリーニングオプション UI
+    ├── CleaningReport.tsx       # 処理結果・警告レポート
+    ├── PreviewTable.tsx         # データプレビューテーブル
+    ├── DownloadButton.tsx       # CSV ダウンロードボタン
+    ├── GeoJSONPanel.tsx         # GeoJSON エクスポート UI
+    └── ErrorNotice.tsx          # エラー表示
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 開発
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# 依存パッケージのインストール
+npm install
+
+# 開発サーバー起動
+npm run dev
+
+# 本番ビルド
+npm run build
+
+# ビルド結果のプレビュー
+npm run preview
+```
+
+---
+
+## 処理の流れ
+
+```
+File (Shift_JIS / UTF-8)
+  └─ detectEncoding       → エンコーディング判別
+  └─ decodeFile           → UTF-16 文字列に変換
+  └─ normalizeText        → BOM 除去 / 改行統一 / NFKC / 不可視文字除去
+  └─ detectDelimiter      → 区切り文字推定
+  └─ parseCsv             → rows: string[][]
+  └─ normalizeHeaders     → 重複・空ヘッダー補完
+  └─ normalizeCells       → トリム / 複数行正規化
+  └─ filterEmptyRows      → 空行除去
+  └─ validateRows         → 警告リスト生成
+  └─ regenerateCsv        → クリーン UTF-8 CSV テキスト
+                          → (任意) generateGeojson → GeoJSON FeatureCollection
 ```
