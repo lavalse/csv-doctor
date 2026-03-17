@@ -12,6 +12,8 @@ export function GeoJSONPanel({ headers, rows, originalFileName }: Props) {
   const [lngCol, setLngCol] = useState<string>("");
   const [latCol, setLatCol] = useState<string>("");
   const [heightCol, setHeightCol] = useState<string>("");
+  const [markerColor, setMarkerColor] = useState("#2563eb");
+  const [markerSize, setMarkerSize] = useState<"small" | "medium" | "large">("medium");
 
   useEffect(() => {
     setLngCol("");
@@ -23,7 +25,7 @@ export function GeoJSONPanel({ headers, rows, originalFileName }: Props) {
 
   const handleDownload = () => {
     if (!canExport) return;
-    const options: GeoJSONExportOptions = { lngColumn: lngCol, latColumn: latCol, heightColumn: heightCol };
+    const options: GeoJSONExportOptions = { lngColumn: lngCol, latColumn: latCol, heightColumn: heightCol, markerColor, markerSize };
     const geojsonText = generateGeojson(headers, rows, options);
     const blob = new Blob([geojsonText], { type: "application/geo+json;charset=utf-8" });
     const url = URL.createObjectURL(blob);
@@ -41,32 +43,47 @@ export function GeoJSONPanel({ headers, rows, originalFileName }: Props) {
         座標列を指定してGeoJSON（FeatureCollection）を出力します。
         緯度・経度が無効な行は <code>geometry: null</code> で出力されます。
       </p>
-      <div className="geojson-selectors">
-        <div className="geojson-selector-row">
-          <label className="geojson-label" htmlFor="geojson-lng">
-            経度列<span className="geojson-required">（必須）</span>
+      <div className="export-selectors">
+        <div className="export-selector-row">
+          <label className="export-label" htmlFor="geojson-lng">
+            経度列<span className="export-required">（必須）</span>
           </label>
-          <select id="geojson-lng" className="geojson-select" value={lngCol} onChange={(e) => setLngCol(e.target.value)}>
+          <select id="geojson-lng" className="export-select" value={lngCol} onChange={(e) => setLngCol(e.target.value)}>
             <option value="">— 選択してください —</option>
             {headers.map((h) => <option key={h} value={h}>{h}</option>)}
           </select>
         </div>
-        <div className="geojson-selector-row">
-          <label className="geojson-label" htmlFor="geojson-lat">
-            緯度列<span className="geojson-required">（必須）</span>
+        <div className="export-selector-row">
+          <label className="export-label" htmlFor="geojson-lat">
+            緯度列<span className="export-required">（必須）</span>
           </label>
-          <select id="geojson-lat" className="geojson-select" value={latCol} onChange={(e) => setLatCol(e.target.value)}>
+          <select id="geojson-lat" className="export-select" value={latCol} onChange={(e) => setLatCol(e.target.value)}>
             <option value="">— 選択してください —</option>
             {headers.map((h) => <option key={h} value={h}>{h}</option>)}
           </select>
         </div>
-        <div className="geojson-selector-row">
-          <label className="geojson-label" htmlFor="geojson-height">
-            高さ列<span className="geojson-optional">（任意）</span>
+        <div className="export-selector-row">
+          <label className="export-label" htmlFor="geojson-height">
+            高さ列<span className="export-optional">（任意）</span>
           </label>
-          <select id="geojson-height" className="geojson-select" value={heightCol} onChange={(e) => setHeightCol(e.target.value)}>
+          <select id="geojson-height" className="export-select" value={heightCol} onChange={(e) => setHeightCol(e.target.value)}>
             <option value="">— 使用しない —</option>
             {headers.map((h) => <option key={h} value={h}>{h}</option>)}
+          </select>
+        </div>
+      </div>
+      <div className="style-section">
+        <div className="style-section-title">スタイル設定</div>
+        <div className="export-selector-row">
+          <label className="export-label">マーカー色</label>
+          <input type="color" className="style-color-input" value={markerColor} onChange={e => setMarkerColor(e.target.value)} />
+        </div>
+        <div className="export-selector-row">
+          <label className="export-label">マーカーサイズ</label>
+          <select className="export-select" value={markerSize} onChange={e => setMarkerSize(e.target.value as "small" | "medium" | "large")}>
+            <option value="small">小 (small)</option>
+            <option value="medium">中 (medium)</option>
+            <option value="large">大 (large)</option>
           </select>
         </div>
       </div>

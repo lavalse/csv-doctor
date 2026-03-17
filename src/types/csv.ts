@@ -33,6 +33,27 @@ export type GeoJSONExportOptions = {
   lngColumn: string;    // header name; empty string = not selected
   latColumn: string;    // header name; empty string = not selected
   heightColumn: string; // header name; empty string = not used
+  markerColor: string;                       // "#RRGGBB"
+  markerSize: "small" | "medium" | "large";
+};
+
+export type CZMLExportOptions = {
+  lngColumn: string;
+  latColumn: string;
+  heightColumn: string;  // empty = default to 0
+  nameColumn: string;    // empty = use row index
+  pointColor: string;    // "#RRGGBB"
+  pixelSize: number;
+};
+
+export type KMLExportOptions = {
+  lngColumn: string;
+  latColumn: string;
+  heightColumn: string;      // empty = omit from coordinates
+  nameColumn: string;        // empty = use row index
+  descriptionColumn: string; // empty = omit <description>
+  iconColor: string;         // "#RRGGBB" → internally converted to AABBGGRR
+  iconScale: number;
 };
 
 export type ProcessingResult = {

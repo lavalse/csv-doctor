@@ -17,8 +17,14 @@ import { CleaningReport } from "./components/CleaningReport";
 import { PreviewTable } from "./components/PreviewTable";
 import { DownloadButton } from "./components/DownloadButton";
 import { GeoJSONPanel } from "./components/GeoJSONPanel";
+import { CZMLPanel } from "./components/CZMLPanel";
+import { KMLPanel } from "./components/KMLPanel";
 import { ErrorNotice } from "./components/ErrorNotice";
 import "./styles/app.css";
+
+const FILE_SIZE_LIMIT = 50 * 1024 * 1024;  // 50 MB: hard limit
+const FILE_SIZE_WARN  =  5 * 1024 * 1024;  // 5 MB: soft warning
+const ROW_LIMIT = 100_000;
 
 const DEFAULT_OPTIONS: CleaningOption = {
   normalizeNFKC: true,
@@ -48,6 +54,10 @@ function runPipeline(
   const rawHeaders = data[0];
   const rawRows = data.slice(1);
 
+  if (rawRows.length > ROW_LIMIT) {
+    throw new Error(`行数が上限（100,000 行）を超えています（${rawRows.length.toLocaleString()} 行）。`);
+  }
+
   const { headers, actions: headerActions, warnings: headerWarnings } = normalizeHeaders(rawHeaders, options);
   const { rows: normalizedRows, actions: cellActions } = normalizeCells(rawRows, options);
   const { rows: filteredRows, actions: filterActions } = filterEmptyRows(normalizedRows, options);
@@ -74,19 +84,26 @@ export default function App() {
   const [options, setOptions] = useState<CleaningOption>(DEFAULT_OPTIONS);
   const [result, setResult] = useState<ProcessingResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [largeFileWarning, setLargeFileWarning] = useState<boolean>(false);
 
   const handleFile = (file: File) => {
     setFileLoadCount((c) => c + 1);
     setError(null);
     setResult(null);
+    setLargeFileWarning(false);
     const reader = new FileReader();
     reader.onload = (e) => {
       const buffer = e.target?.result as ArrayBuffer;
+      if (buffer.byteLength > FILE_SIZE_LIMIT) {
+        setError(`ファイルサイズが上限（50 MB）を超えています（${(buffer.byteLength / 1024 / 1024).toFixed(1)} MB）。`);
+        return;
+      }
       const enc = detectEncoding(buffer);
       setRawBuffer(buffer);
       setCachedEncoding(enc);
       setCachedFileName(file.name);
       setFileSize(file.size);
+      setLargeFileWarning(buffer.byteLength > FILE_SIZE_WARN);
       try {
         setResult(runPipeline(buffer, enc, options, file.name));
       } catch (err) {
@@ -113,14 +130,55 @@ export default function App() {
       <header className="hero">
         <h1 className="hero-title">CSV Doctor</h1>
         <p className="hero-subtitle">
-          Shift_JIS / CP932 / UTF-8 CSVファイルを自動クリーニングして<br />
-          文字化けなしのUTF-8 CSVに変換します
+          CSV のお悩み、まるごと解決。WebGIS 向けフォーマットへの変換もブラウザ完結で。
         </p>
       </header>
 
       <main className="main">
+        <section className="intro-section">
+          <p className="intro-lead">
+            各種 CSV 形式に振り回されて、頭を抱えた経験はありませんか？
+          </p>
+          <p className="intro-body">
+            そもそも CSV は WebGIS のために設計されたフォーマットではありません。
+            文字コードの混在、区切り文字の揺れ、全角スペースや見えない制御文字——
+            地図に載せようとするたびに何かしらの問題が起きるのは、ある意味当然です。
+          </p>
+          <p className="intro-body">
+            <strong>CSV Doctor</strong> はそんな CSV を自動でクリーニングし、
+            すぐに使える UTF-8 CSV として書き出します。
+            さらに、WebGIS で広く推奨される <strong>GeoJSON・CZML・KML</strong>
+            への変換もワンクリックで行えます。
+            ファイルはブラウザ内だけで処理されるため、サーバーに送信されることはありません。
+          </p>
+          <ul className="intro-features">
+            <li>
+              <span className="feature-icon">🔤</span>
+              <span>Shift_JIS / CP932 / UTF-8 を自動判別してクリーニング</span>
+            </li>
+            <li>
+              <span className="feature-icon">🗺️</span>
+              <span>座標列を指定するだけで GeoJSON / CZML / KML に変換</span>
+            </li>
+            <li>
+              <span className="feature-icon">🔒</span>
+              <span>完全オフライン処理——データは外部に出ない</span>
+            </li>
+          </ul>
+        </section>
+
         <FileDropzone onFileSelected={handleFile} />
 
+        {largeFileWarning && (
+          <div className="warning-notice">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M8 1.5L14.5 13H1.5L8 1.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+              <path d="M8 6v3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+              <circle cx="8" cy="11.5" r="0.75" fill="currentColor"/>
+            </svg>
+            <span>ファイルサイズが 5 MB を超えています。処理に時間がかかる場合があります。</span>
+          </div>
+        )}
         {error && <ErrorNotice message={error} />}
 
         {result && (
@@ -143,12 +201,25 @@ export default function App() {
               rows={result.parsed.rows}
               originalFileName={result.originalFileName}
             />
+            <CZMLPanel
+              key={`czml-${fileLoadCount}`}
+              headers={result.parsed.headers}
+              rows={result.parsed.rows}
+              originalFileName={result.originalFileName}
+            />
+            <KMLPanel
+              key={`kml-${fileLoadCount}`}
+              headers={result.parsed.headers}
+              rows={result.parsed.rows}
+              originalFileName={result.originalFileName}
+            />
           </>
         )}
       </main>
 
       <footer className="footer">
         <p>すべての処理はブラウザ内で完結します。ファイルはサーバーに送信されません。</p>
+        <p>ファイルサイズ上限：50 MB　／　行数上限：100,000 行</p>
       </footer>
     </div>
   );

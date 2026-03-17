@@ -100,6 +100,56 @@ body {
   padding-bottom: 0.5rem;
 }
 
+/* ===== Intro Section ===== */
+.intro-section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.75rem 2rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.intro-lead {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  line-height: 1.5;
+}
+
+.intro-body {
+  font-size: 0.95rem;
+  color: var(--color-text);
+  line-height: 1.8;
+}
+
+.intro-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  padding: 1rem 1.25rem;
+  background: #f8fafc;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+}
+
+.intro-features li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+.feature-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
 /* ===== Dropzone ===== */
 .dropzone {
   background: var(--color-surface);
@@ -365,6 +415,24 @@ body {
   background: #f8f8f8;
 }
 
+/* ===== Warning Notice ===== */
+.warning-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  border-radius: var(--radius);
+  padding: 0.875rem 1rem;
+  color: var(--color-warning-text);
+  font-size: 0.9rem;
+}
+
+.warning-notice svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
 /* ===== Error Notice ===== */
 .error-notice {
   display: flex;
@@ -393,47 +461,57 @@ body {
   margin-top: auto;
 }
 
-/* ===== GeoJSON Export ===== */
+/* ===== Export Panels ===== */
 .geojson-card {
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
   border-color: #86efac;
 }
 
-.geojson-selectors {
+.czml-card {
+  background: linear-gradient(135deg, #faf5ff 0%, #ede9fe 100%);
+  border-color: #c4b5fd;
+}
+
+.kml-card {
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border-color: #fdba74;
+}
+
+.export-selectors {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   margin-bottom: 1.25rem;
 }
 
-.geojson-selector-row {
+.export-selector-row {
   display: grid;
   grid-template-columns: 8rem 1fr;
   align-items: center;
   gap: 0.75rem;
 }
 
-.geojson-label {
+.export-label {
   font-size: 0.875rem;
   font-weight: 500;
   white-space: nowrap;
 }
 
-.geojson-required {
+.export-required {
   font-size: 0.75rem;
   font-weight: 400;
   color: var(--color-error-text);
   margin-left: 0.25rem;
 }
 
-.geojson-optional {
+.export-optional {
   font-size: 0.75rem;
   font-weight: 400;
   color: var(--color-text-muted);
   margin-left: 0.25rem;
 }
 
-.geojson-select {
+.export-select {
   width: 100%;
   padding: 0.4rem 0.6rem;
   font-size: 0.875rem;
@@ -444,7 +522,7 @@ body {
   cursor: pointer;
 }
 
-.geojson-select:focus {
+.export-select:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 1px;
 }
@@ -453,6 +531,50 @@ body {
   opacity: 0.45;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+/* ===== Style Section ===== */
+.style-section {
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--color-border);
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.style-section-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--color-text-muted);
+}
+
+.style-color-input {
+  width: 2.5rem;
+  height: 2rem;
+  padding: 0.1rem 0.15rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  background: white;
+}
+
+.style-number-input {
+  width: 5rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.875rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: white;
+  color: var(--color-text);
+}
+
+.style-number-input:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
 }
 
 /* ===== Responsive ===== */
@@ -487,7 +609,7 @@ body {
     justify-content: center;
   }
 
-  .geojson-selector-row {
+  .export-selector-row {
     grid-template-columns: 1fr;
     gap: 0.3rem;
   }

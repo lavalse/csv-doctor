@@ -18,7 +18,7 @@ export function generateGeojson(
   rows: string[][],
   options: GeoJSONExportOptions
 ): string {
-  const { lngColumn, latColumn, heightColumn } = options;
+  const { lngColumn, latColumn, heightColumn, markerColor, markerSize } = options;
 
   const lngIdx = headers.indexOf(lngColumn);
   const latIdx = headers.indexOf(latColumn);
@@ -56,6 +56,9 @@ export function generateGeojson(
         coords.push(heightVal);
       }
     }
+
+    properties["marker-color"] = markerColor;
+    properties["marker-size"] = markerSize;
 
     return {
       type: "Feature",
