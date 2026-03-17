@@ -1,5 +1,9 @@
 # CSV Doctor
 
+<p align="center">
+  <img src="public/csv_doctor.png" alt="CSV Doctor" width="160" />
+</p>
+
 ブラウザで完結する CSV クリーニング・WebGIS 変換ツールです。Shift_JIS / CP932 / UTF-8 の CSV ファイルを読み込み、自動クリーニングを施したうえで文字化けのない UTF-8 CSV としてダウンロードできます。座標列がある場合は **GeoJSON / CZML / KML** への変換・エクスポートにも対応しています。
 
 **すべての処理はブラウザ内で完結します。ファイルはサーバーに送信されません。**
