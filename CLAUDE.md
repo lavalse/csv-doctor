@@ -2,8 +2,9 @@
 
 ## プロジェクト概要
 
-ブラウザ完結型の CSV クリーニング・GeoJSON 変換ツール。
+ブラウザ完結型の CSV クリーニング・WebGIS 変換ツール。
 React 19 + TypeScript + Vite 8 で構築。サーバーサイド処理なし。
+GeoJSON / CZML / KML へのエクスポートに対応。ファイルサイズ上限 50 MB、行数上限 100,000 行。
 
 ---
 
@@ -34,6 +35,12 @@ detectEncoding → decodeFile → normalizeText → detectDelimiter
 - `ProcessingResult` 型が全ての出力を束ねる
 - オプション変更時は同じパイプラインを再実行（バッファをキャッシュ）
 
+### ファイル制限 (`src/App.tsx`)
+
+- `FILE_SIZE_LIMIT = 50 MB`: ハード上限。`handleFile` 内で `buffer.byteLength` を判定し、超過時は `setError` してパイプライン中断
+- `FILE_SIZE_WARN = 5 MB`: ソフト警告。`largeFileWarning` state で管理し、バナー表示
+- `ROW_LIMIT = 100,000`: `runPipeline` 内で `parseCsv` 直後に `rawRows.length` を判定し、超過時は `throw`
+
 ### GeoJSON 変換 (`src/lib/generateGeojson.ts`)
 
 - `generateGeojson(headers, rows, options)` → JSON 文字列
@@ -41,11 +48,26 @@ detectEncoding → decodeFile → normalizeText → detectDelimiter
 - 座標が空または非数値の行は `geometry: null`（行は除外しない）
 - 数値文字列は `number` 型に変換して `properties` に格納
 - 高さ列はパース成功時のみ座標配列の第3要素として追加
+- `markerColor` / `markerSize` を `properties` の `marker-color` / `marker-size` として出力
 
-### GeoJSON UI (`src/components/GeoJSONPanel.tsx`)
+### CZML 変換 (`src/lib/generateCzml.ts`)
+
+- `generateCzml(headers, rows, options)` → JSON 文字列
+- 先頭に `id: "document"` パケットを挿入
+- 高さ未指定時は 0 m（Cesium の地表）として出力
+- `pointColor` は `#RRGGBB` → RGBA (0〜1 float) 配列に変換
+
+### KML 変換 (`src/lib/generateKml.ts`)
+
+- `generateKml(headers, rows, options)` → XML 文字列
+- `iconColor` は `#RRGGBB` → KML の `AABBGGRR` 形式に変換
+- 高さ列が空の場合は座標を `lng,lat` のみ（2D）で出力
+
+### エクスポートパネル共通
 
 - `key={fileLoadCount}` でファイルロードのたびにアンマウント → ドロップダウンをリセット
 - 経度・緯度が未選択の場合はダウンロードボタンを `disabled`
+- CSS クラスは `.export-*` 系を共有（`GeoJSONPanel` / `CZMLPanel` / `KMLPanel` 共通）
 
 ---
 
@@ -59,7 +81,9 @@ detectEncoding → decodeFile → normalizeText → detectDelimiter
 | `CleaningOption` | ユーザーが設定できるクリーニングオプション |
 | `CleaningAction` | クリーニングで実施された操作（レポート表示用） |
 | `ValidationWarning` | バリデーション警告 |
-| `GeoJSONExportOptions` | GeoJSON 変換時の列指定オプション |
+| `GeoJSONExportOptions` | GeoJSON 変換時の列指定・スタイルオプション |
+| `CZMLExportOptions` | CZML 変換時の列指定・スタイルオプション |
+| `KMLExportOptions` | KML 変換時の列指定・スタイルオプション |
 
 ---
 
@@ -70,6 +94,9 @@ detectEncoding → decodeFile → normalizeText → detectDelimiter
 - カード系コンポーネントは `.card` ベースクラス＋修飾クラスで色分け
   - `.download-card`: 青グラデーション
   - `.geojson-card`: 緑グラデーション
+  - `.czml-card`: 紫グラデーション
+  - `.kml-card`: オレンジグラデーション
+- エクスポートパネルのセレクタ類は `.export-*` 系クラスに統一（旧 `.geojson-*` から移行済み）
 
 ---
 

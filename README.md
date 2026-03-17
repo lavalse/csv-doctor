@@ -1,6 +1,6 @@
 # CSV Doctor
 
-ブラウザで完結する CSV クリーニング・変換ツールです。Shift_JIS / CP932 / UTF-8 の CSV ファイルを読み込み、自動クリーニングを施したうえで文字化けのない UTF-8 CSV としてダウンロードできます。座標列がある場合は GeoJSON (FeatureCollection) への変換・エクスポートにも対応しています。
+ブラウザで完結する CSV クリーニング・WebGIS 変換ツールです。Shift_JIS / CP932 / UTF-8 の CSV ファイルを読み込み、自動クリーニングを施したうえで文字化けのない UTF-8 CSV としてダウンロードできます。座標列がある場合は **GeoJSON / CZML / KML** への変換・エクスポートにも対応しています。
 
 **すべての処理はブラウザ内で完結します。ファイルはサーバーに送信されません。**
 
@@ -20,12 +20,31 @@
 | 空行除去 | データのない行を削除 |
 | 重複・空ヘッダーの補完 | 重複ヘッダーに連番付与、空ヘッダーを自動命名 |
 
+### ファイル制限
+| 項目 | 上限 |
+|------|------|
+| ファイルサイズ | 50 MB（超過時はエラー、5 MB 超で警告表示） |
+| 行数 | 100,000 行 |
+
 ### GeoJSON エクスポート
 - 経度・緯度列（必須）と高さ列（任意）を UI から選択
 - 選択した座標列を `Point` ジオメトリとして出力
 - 座標が無効な行は `geometry: null` で出力（行は除外されない）
 - 座標列以外のカラムは `properties` に自動格納（数値文字列は `number` 型に変換）
+- マーカー色・サイズを UI から指定して `marker-color` / `marker-size` プロパティに出力
 - 出力形式: `GeoJSON FeatureCollection`（`application/geo+json`）
+
+### CZML エクスポート
+- 経度・緯度・高さ列、名前列、ポイント色・サイズを指定
+- 高さ未指定時は 0 m として出力
+- Cesium / Re:Earth など CZML 対応ビューアで直接利用可能
+- 出力形式: `CZML`（`application/json`）
+
+### KML エクスポート
+- 経度・緯度・高さ列、名前列、説明列、アイコン色・スケールを指定
+- アイコン色は `#RRGGBB` → KML の `AABBGGRR` 形式に自動変換
+- Google Earth / QGIS など KML 対応アプリで直接利用可能
+- 出力形式: `KML`（`application/vnd.google-earth.kml+xml`）
 
 ---
 
@@ -59,7 +78,9 @@ src/
 │   ├── filterEmptyRows.ts      # 空行フィルタ
 │   ├── validateRows.ts         # バリデーション・警告生成
 │   ├── regenerateCsv.ts        # クリーン CSV 再生成
-│   └── generateGeojson.ts      # GeoJSON 変換・出力
+│   ├── generateGeojson.ts      # GeoJSON 変換・出力
+│   ├── generateCzml.ts         # CZML 変換・出力
+│   └── generateKml.ts          # KML 変換・出力
 └── components/
     ├── FileDropzone.tsx         # ファイルドロップ・選択 UI
     ├── FileSummary.tsx          # ファイル情報サマリー
@@ -68,6 +89,8 @@ src/
     ├── PreviewTable.tsx         # データプレビューテーブル
     ├── DownloadButton.tsx       # CSV ダウンロードボタン
     ├── GeoJSONPanel.tsx         # GeoJSON エクスポート UI
+    ├── CZMLPanel.tsx            # CZML エクスポート UI
+    ├── KMLPanel.tsx             # KML エクスポート UI
     └── ErrorNotice.tsx          # エラー表示
 ```
 
@@ -106,4 +129,6 @@ File (Shift_JIS / UTF-8)
   └─ validateRows         → 警告リスト生成
   └─ regenerateCsv        → クリーン UTF-8 CSV テキスト
                           → (任意) generateGeojson → GeoJSON FeatureCollection
+                          → (任意) generateCzml    → CZML
+                          → (任意) generateKml     → KML
 ```
