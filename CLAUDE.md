@@ -71,6 +71,7 @@ detectEncoding → decodeFile → normalizeText → detectDelimiter
 
 ### エクスポートパネル共通
 
+- `detectCoordinateColumns(headers)` で経度・緯度列を自動推定し、ドロップダウンを初期選択（英語 / 中国語 / 日本語ヘッダーに対応、3段階優先度マッチング）
 - `key={fileLoadCount}` でファイルロードのたびにアンマウント → ドロップダウンをリセット
 - 経度・緯度が未選択の場合はダウンロードボタンを `disabled`
 - CSS クラスは `.export-*` 系を共有（`GeoJSONPanel` / `CZMLPanel` / `KMLPanel` 共通）
