@@ -1,17 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { KMLExportOptions } from "../types/csv";
 import { generateKml, kmlFileName } from "../lib/generateKml";
+import { detectCoordinateColumns } from "../lib/detectCoordinateColumns";
 
 type Props = { headers: string[]; rows: string[][]; originalFileName: string };
 
 export function KMLPanel({ headers, rows, originalFileName }: Props) {
-  const [lngCol, setLngCol] = useState("");
-  const [latCol, setLatCol] = useState("");
+  const detected = detectCoordinateColumns(headers);
+  const [lngCol, setLngCol] = useState(detected.lngCol);
+  const [latCol, setLatCol] = useState(detected.latCol);
   const [heightCol, setHeightCol] = useState("");
   const [nameCol, setNameCol] = useState("");
   const [descCol, setDescCol] = useState("");
   const [iconColor, setIconColor] = useState("#2563eb");
   const [iconScale, setIconScale] = useState(1.0);
+
+  useEffect(() => {
+    const d = detectCoordinateColumns(headers);
+    setLngCol(d.lngCol);
+    setLatCol(d.latCol);
+    setHeightCol("");
+    setNameCol("");
+    setDescCol("");
+  }, [headers]);
 
   const canExport = lngCol !== "" && latCol !== "";
 

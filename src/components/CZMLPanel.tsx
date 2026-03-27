@@ -1,16 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CZMLExportOptions } from "../types/csv";
 import { generateCzml, czmlFileName } from "../lib/generateCzml";
+import { detectCoordinateColumns } from "../lib/detectCoordinateColumns";
 
 type Props = { headers: string[]; rows: string[][]; originalFileName: string };
 
 export function CZMLPanel({ headers, rows, originalFileName }: Props) {
-  const [lngCol, setLngCol] = useState("");
-  const [latCol, setLatCol] = useState("");
+  const detected = detectCoordinateColumns(headers);
+  const [lngCol, setLngCol] = useState(detected.lngCol);
+  const [latCol, setLatCol] = useState(detected.latCol);
   const [heightCol, setHeightCol] = useState("");
   const [nameCol, setNameCol] = useState("");
   const [pointColor, setPointColor] = useState("#ffff00");
   const [pixelSize, setPixelSize] = useState(8);
+
+  useEffect(() => {
+    const d = detectCoordinateColumns(headers);
+    setLngCol(d.lngCol);
+    setLatCol(d.latCol);
+    setHeightCol("");
+    setNameCol("");
+  }, [headers]);
 
   const canExport = lngCol !== "" && latCol !== "";
 

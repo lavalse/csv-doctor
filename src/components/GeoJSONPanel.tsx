@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { GeoJSONExportOptions } from "../types/csv";
 import { generateGeojson, geojsonFileName } from "../lib/generateGeojson";
+import { detectCoordinateColumns } from "../lib/detectCoordinateColumns";
 
 type Props = {
   headers: string[];
@@ -9,15 +10,17 @@ type Props = {
 };
 
 export function GeoJSONPanel({ headers, rows, originalFileName }: Props) {
-  const [lngCol, setLngCol] = useState<string>("");
-  const [latCol, setLatCol] = useState<string>("");
+  const detected = detectCoordinateColumns(headers);
+  const [lngCol, setLngCol] = useState<string>(detected.lngCol);
+  const [latCol, setLatCol] = useState<string>(detected.latCol);
   const [heightCol, setHeightCol] = useState<string>("");
   const [markerColor, setMarkerColor] = useState("#2563eb");
   const [markerSize, setMarkerSize] = useState<"small" | "medium" | "large">("medium");
 
   useEffect(() => {
-    setLngCol("");
-    setLatCol("");
+    const d = detectCoordinateColumns(headers);
+    setLngCol(d.lngCol);
+    setLatCol(d.latCol);
     setHeightCol("");
   }, [headers]);
 
