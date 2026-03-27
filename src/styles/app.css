@@ -461,6 +461,12 @@ body {
   margin-top: auto;
 }
 
+.footer-version {
+  margin-top: 0.25rem;
+  font-size: 0.7rem;
+  opacity: 0.6;
+}
+
 /* ===== Export Panels ===== */
 .geojson-card {
   background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);

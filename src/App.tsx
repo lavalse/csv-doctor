@@ -220,6 +220,7 @@ export default function App() {
       <footer className="footer">
         <p>すべての処理はブラウザ内で完結します。ファイルはサーバーに送信されません。</p>
         <p>ファイルサイズ上限：50 MB　／　行数上限：100,000 行</p>
+        <p className="footer-version">v{__APP_VERSION__}</p>
       </footer>
     </div>
   );
