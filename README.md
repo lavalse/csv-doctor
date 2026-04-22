@@ -8,6 +8,8 @@
 
 **すべての処理はブラウザ内で完結します。ファイルはサーバーに送信されません。**
 
+🚀 **オンラインデモ**: https://csv-doctor.pages.dev （近日公開予定）
+
 ---
 
 ## 主な機能
@@ -141,3 +143,16 @@ File (Shift_JIS / UTF-8)
                           → (任意) generateCzml    → CZML
                           → (任意) generateKml     → KML
 ```
+
+---
+
+## 開発について
+
+このプロジェクトは [Claude Code](https://claude.com/claude-code)（Anthropic 社の AI コーディングアシスタント）とペアプログラミングで開発されました。設計・実装・ドキュメントの各段階で Claude を活用しています。
+
+---
+
+## ライセンス
+
+[MIT License](./LICENSE) © 2026 lavalse
+
