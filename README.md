@@ -4,155 +4,156 @@
   <img src="public/csv_doctor.png" alt="CSV Doctor" width="160" />
 </p>
 
-ブラウザで完結する CSV クリーニング・WebGIS 変換ツールです。Shift_JIS / CP932 / UTF-8 の CSV ファイルを読み込み、自動クリーニングを施したうえで文字化けのない UTF-8 CSV としてダウンロードできます。座標列がある場合は **GeoJSON / CZML / KML** への変換・エクスポートにも対応しています。
+**English · [日本語](./README.ja.md)**
 
-**すべての処理はブラウザ内で完結します。ファイルはサーバーに送信されません。**
+A browser-based CSV cleaning and WebGIS conversion tool. Load Shift_JIS / CP932 / UTF-8 CSV files, apply automatic cleaning, and download a clean UTF-8 CSV with no character corruption. If coordinate columns are present, it also converts to **GeoJSON / CZML / KML**.
 
-🚀 **オンラインデモ**: https://csv-doctor.pages.dev （近日公開予定）
+**All processing happens in your browser. Files are never uploaded to a server.**
 
----
-
-## 主な機能
-
-### CSV クリーニング
-| 機能 | 説明 |
-|------|------|
-| エンコーディング自動検出 | Shift_JIS / CP932 / UTF-8 (BOM あり・なし) を自動判別 |
-| 区切り文字自動検出 | カンマ / セミコロン / タブを自動判別 |
-| Unicode 正規化 (NFKC) | 全角英数字・記号を半角に統一 |
-| 不可視文字除去 | ゼロ幅スペースなどの制御文字を削除 |
-| ヘッダー・セルのトリム | 前後の空白を除去 |
-| 複数行セルの正規化 | セル内改行を統一 |
-| 空行除去 | データのない行を削除 |
-| 重複・空ヘッダーの補完 | 重複ヘッダーに連番付与、空ヘッダーを自動命名 |
-
-### ファイル制限
-| 項目 | 上限 |
-|------|------|
-| ファイルサイズ | 50 MB（超過時はエラー、5 MB 超で警告表示） |
-| 行数 | 100,000 行 |
-
-### 座標列の自動検出
-- CSV ヘッダーから経度・緯度列を自動推定し、エクスポートパネルのドロップダウンに初期選択
-- 英語（`longitude`, `lat`, `lng` 等）、中国語（`经度`, `纬度`）、日本語（`経度`, `緯度`）に対応
-- 検出できない場合はユーザーが手動で選択
-
-### GeoJSON エクスポート
-- 経度・緯度列（必須）と高さ列（任意）を UI から選択
-- 選択した座標列を `Point` ジオメトリとして出力
-- 座標が無効な行は `geometry: null` で出力（行は除外されない）
-- 座標列以外のカラムは `properties` に自動格納（数値文字列は `number` 型に変換）
-- マーカー色・サイズを UI から指定して `marker-color` / `marker-size` プロパティに出力
-- 出力形式: `GeoJSON FeatureCollection`（`application/geo+json`）
-
-### CZML エクスポート
-- 経度・緯度・高さ列、名前列、ポイント色・サイズを指定
-- 高さ未指定時は 0 m として出力
-- Cesium / Re:Earth など CZML 対応ビューアで直接利用可能
-- 出力形式: `CZML`（`application/json`）
-
-### KML エクスポート
-- 経度・緯度・高さ列、名前列、説明列、アイコン色・スケールを指定
-- アイコン色は `#RRGGBB` → KML の `AABBGGRR` 形式に自動変換
-- Google Earth / QGIS など KML 対応アプリで直接利用可能
-- 出力形式: `KML`（`application/vnd.google-earth.kml+xml`）
+🚀 **Online demo**: https://csv-doctor.surreal.tools (coming soon)
 
 ---
 
-## 技術スタック
+## Features
 
-| 項目 | 内容 |
-|------|------|
-| フレームワーク | React 19 + TypeScript |
-| ビルドツール | Vite 8 |
-| CSV パース | PapaParse |
-| エンコーディング変換 | encoding-japanese |
-| スタイル | Plain CSS（フレームワークなし） |
+### CSV Cleaning
+| Feature | Description |
+|---------|-------------|
+| Auto-detect encoding | Shift_JIS / CP932 / UTF-8 (with/without BOM) |
+| Auto-detect delimiter | Comma / semicolon / tab |
+| Unicode normalization (NFKC) | Converts full-width characters to half-width |
+| Invisible character removal | Strips zero-width spaces and other control characters |
+| Trim header/cell whitespace | Removes leading and trailing whitespace |
+| Multiline cell normalization | Unifies line breaks inside cells |
+| Empty row removal | Deletes rows with no data |
+| Duplicate/empty header handling | Appends suffixes to duplicates, auto-names empty headers |
+
+### File Limits
+| Item | Limit |
+|------|-------|
+| File size | 50 MB (error above, warning above 5 MB) |
+| Row count | 100,000 rows |
+
+### Coordinate Column Auto-Detection
+- Automatically identifies longitude/latitude columns from CSV headers and pre-fills the export panel dropdowns
+- Supports English (`longitude`, `lat`, `lng`, etc.), Chinese (`经度`, `纬度`), and Japanese (`経度`, `緯度`)
+- Falls back to manual selection if detection fails
+
+### GeoJSON Export
+- Select longitude/latitude (required) and height (optional) columns from the UI
+- Outputs selected coordinates as `Point` geometry
+- Rows with invalid coordinates are output as `geometry: null` (rows are not dropped)
+- Non-coordinate columns are automatically stored in `properties` (numeric strings are converted to `number`)
+- Marker color and size specified via UI are output as `marker-color` / `marker-size` properties
+- Output format: `GeoJSON FeatureCollection` (`application/geo+json`)
+
+### CZML Export
+- Specify longitude/latitude/height columns, name column, point color, and size
+- Height defaults to 0 m if unspecified
+- Directly usable in Cesium / Re:Earth and other CZML viewers
+- Output format: `CZML` (`application/json`)
+
+### KML Export
+- Specify longitude/latitude/height columns, name column, description column, icon color, and scale
+- Icon color `#RRGGBB` is automatically converted to KML's `AABBGGRR` format
+- Directly usable in Google Earth / QGIS and other KML-compatible apps
+- Output format: `KML` (`application/vnd.google-earth.kml+xml`)
 
 ---
 
-## ディレクトリ構成
+## Tech Stack
+
+| Item | Details |
+|------|---------|
+| Framework | React 19 + TypeScript |
+| Build tool | Vite 8 |
+| CSV parser | PapaParse |
+| Encoding conversion | encoding-japanese |
+| Styling | Plain CSS (no framework) |
+
+---
+
+## Project Structure
 
 ```
 src/
-├── App.tsx                     # ルートコンポーネント・処理パイプライン
+├── App.tsx                     # Root component & processing pipeline
 ├── types/
-│   └── csv.ts                  # 型定義 (ProcessingResult, GeoJSONExportOptions など)
+│   └── csv.ts                  # Type definitions (ProcessingResult, GeoJSONExportOptions, etc.)
 ├── lib/
-│   ├── detectEncoding.ts       # エンコーディング検出
-│   ├── decodeFile.ts           # ArrayBuffer → 文字列デコード
-│   ├── normalizeText.ts        # テキストレベルの正規化
-│   ├── detectDelimiter.ts      # 区切り文字推定
-│   ├── parseCsv.ts             # CSV パース (PapaParse ラッパー)
-│   ├── normalizeHeaders.ts     # ヘッダー正規化・重複補完
-│   ├── normalizeCells.ts       # セル正規化
-│   ├── filterEmptyRows.ts      # 空行フィルタ
-│   ├── validateRows.ts         # バリデーション・警告生成
-│   ├── regenerateCsv.ts        # クリーン CSV 再生成
-│   ├── generateGeojson.ts      # GeoJSON 変換・出力
-│   ├── generateCzml.ts         # CZML 変換・出力
-│   └── generateKml.ts          # KML 変換・出力
+│   ├── detectEncoding.ts       # Encoding detection
+│   ├── decodeFile.ts           # ArrayBuffer → string decoding
+│   ├── normalizeText.ts        # Text-level normalization
+│   ├── detectDelimiter.ts      # Delimiter detection
+│   ├── parseCsv.ts             # CSV parsing (PapaParse wrapper)
+│   ├── normalizeHeaders.ts     # Header normalization & dedup
+│   ├── normalizeCells.ts       # Cell normalization
+│   ├── filterEmptyRows.ts      # Empty row filter
+│   ├── validateRows.ts         # Validation & warning generation
+│   ├── regenerateCsv.ts        # Clean CSV regeneration
+│   ├── generateGeojson.ts      # GeoJSON conversion
+│   ├── generateCzml.ts         # CZML conversion
+│   └── generateKml.ts          # KML conversion
 └── components/
-    ├── FileDropzone.tsx         # ファイルドロップ・選択 UI
-    ├── FileSummary.tsx          # ファイル情報サマリー
-    ├── OptionsPanel.tsx         # クリーニングオプション UI
-    ├── CleaningReport.tsx       # 処理結果・警告レポート
-    ├── PreviewTable.tsx         # データプレビューテーブル
-    ├── DownloadButton.tsx       # CSV ダウンロードボタン
-    ├── GeoJSONPanel.tsx         # GeoJSON エクスポート UI
-    ├── CZMLPanel.tsx            # CZML エクスポート UI
-    ├── KMLPanel.tsx             # KML エクスポート UI
-    └── ErrorNotice.tsx          # エラー表示
+    ├── FileDropzone.tsx        # File drop/select UI
+    ├── FileSummary.tsx         # File info summary
+    ├── OptionsPanel.tsx        # Cleaning options UI
+    ├── CleaningReport.tsx      # Processing results & warnings
+    ├── PreviewTable.tsx        # Data preview table
+    ├── DownloadButton.tsx      # CSV download button
+    ├── GeoJSONPanel.tsx        # GeoJSON export UI
+    ├── CZMLPanel.tsx           # CZML export UI
+    ├── KMLPanel.tsx            # KML export UI
+    └── ErrorNotice.tsx         # Error display
 ```
 
 ---
 
-## 開発
+## Development
 
 ```bash
-# 依存パッケージのインストール
+# Install dependencies
 npm install
 
-# 開発サーバー起動
+# Start dev server
 npm run dev
 
-# 本番ビルド
+# Production build
 npm run build
 
-# ビルド結果のプレビュー
+# Preview the build
 npm run preview
 ```
 
 ---
 
-## 処理の流れ
+## Processing Pipeline
 
 ```
 File (Shift_JIS / UTF-8)
-  └─ detectEncoding       → エンコーディング判別
-  └─ decodeFile           → UTF-16 文字列に変換
-  └─ normalizeText        → BOM 除去 / 改行統一 / NFKC / 不可視文字除去
-  └─ detectDelimiter      → 区切り文字推定
+  └─ detectEncoding       → Encoding detection
+  └─ decodeFile           → Decode to UTF-16 string
+  └─ normalizeText        → Strip BOM / unify newlines / NFKC / remove invisible chars
+  └─ detectDelimiter      → Delimiter detection
   └─ parseCsv             → rows: string[][]
-  └─ normalizeHeaders     → 重複・空ヘッダー補完
-  └─ normalizeCells       → トリム / 複数行正規化
-  └─ filterEmptyRows      → 空行除去
-  └─ validateRows         → 警告リスト生成
-  └─ regenerateCsv        → クリーン UTF-8 CSV テキスト
-                          → (任意) generateGeojson → GeoJSON FeatureCollection
-                          → (任意) generateCzml    → CZML
-                          → (任意) generateKml     → KML
+  └─ normalizeHeaders     → Dedup / fill empty headers
+  └─ normalizeCells       → Trim / multiline normalization
+  └─ filterEmptyRows      → Remove empty rows
+  └─ validateRows         → Generate warning list
+  └─ regenerateCsv        → Clean UTF-8 CSV text
+                          → (optional) generateGeojson → GeoJSON FeatureCollection
+                          → (optional) generateCzml    → CZML
+                          → (optional) generateKml     → KML
 ```
 
 ---
 
-## 開発について
+## Built With Claude
 
-このプロジェクトは [Claude Code](https://claude.com/claude-code)（Anthropic 社の AI コーディングアシスタント）とペアプログラミングで開発されました。設計・実装・ドキュメントの各段階で Claude を活用しています。
+This project was built with [Claude Code](https://claude.com/claude-code), Anthropic's AI coding assistant, as a pair-programming collaborator across design, implementation, and documentation.
 
 ---
 
-## ライセンス
+## License
 
 [MIT License](./LICENSE) © 2026 lavalse
-
