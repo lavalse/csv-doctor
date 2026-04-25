@@ -1,7 +1,7 @@
 # CSV Doctor
 
 <p align="center">
-  <img src="public/csv_doctor.png" alt="CSV Doctor" width="160" />
+  <img src="public/csv-doctor-pix.png" alt="CSV Doctor" width="160" />
 </p>
 
 **[English](./README.md) · 日本語**

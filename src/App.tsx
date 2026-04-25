@@ -128,6 +128,18 @@ export default function App() {
   return (
     <div className="app">
       <header className="hero">
+        <a
+          className="hero-github"
+          href="https://github.com/lavalse/csv-doctor"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub repository"
+        >
+          <svg width="24" height="24" aria-hidden="true">
+            <use href="/icons.svg#github-icon" />
+          </svg>
+        </a>
+        <img src="/csv-doctor-pix.png" alt="" className="hero-logo" />
         <h1 className="hero-title">CSV Doctor</h1>
         <p className="hero-subtitle">
           CSV のお悩み、まるごと解決。WebGIS 向けフォーマットへの変換もブラウザ完結で。
