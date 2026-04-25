@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://csv-doctor.surreal.tools/sitemap.xml

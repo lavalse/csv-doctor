@@ -9,6 +9,8 @@
     <meta name="description" content="ブラウザで完結する CSV クリーニング・WebGIS 変換ツール。Shift_JIS/CP932/UTF-8 自動判別、GeoJSON/CZML/KML エクスポート対応。" />
     <link rel="canonical" href="https://csv-doctor.surreal.tools" />
 
+    <meta name="theme-color" content="#1e3a5f" />
+
     <!-- Open Graph -->
     <meta property="og:title" content="CSV Doctor" />
     <meta property="og:description" content="ブラウザで完結する CSV クリーニング・WebGIS 変換ツール。Shift_JIS/CP932/UTF-8 自動判別、GeoJSON/CZML/KML エクスポート対応。" />
@@ -16,12 +18,31 @@
     <meta property="og:url" content="https://csv-doctor.surreal.tools" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="CSV Doctor" />
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:locale:alternate" content="en_US" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="CSV Doctor" />
     <meta name="twitter:description" content="ブラウザで完結する CSV クリーニング・WebGIS 変換ツール。" />
     <meta name="twitter:image" content="https://csv-doctor.surreal.tools/csv-doctor-pix.png" />
+
+    <!-- Structured data: SoftwareApplication -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "CSV Doctor",
+        "url": "https://csv-doctor.surreal.tools",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any (browser-based)",
+        "description": "ブラウザで完結する CSV クリーニング・WebGIS 変換ツール。Shift_JIS/CP932/UTF-8 自動判別、GeoJSON/CZML/KML エクスポート対応。",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "license": "https://opensource.org/licenses/MIT",
+        "softwareVersion": "1.0.0",
+        "image": "https://csv-doctor.surreal.tools/csv-doctor-pix.png"
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

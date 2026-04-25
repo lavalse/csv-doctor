@@ -98,7 +98,15 @@ detectEncoding → decodeFile → normalizeText → detectDelimiter
   - `.download-card`: 青 / `.geojson-card`: 緑 / `.czml-card`: 紫 / `.kml-card`: オレンジ
 - エクスポートパネルのセレクタ類は `.export-*` 系クラスに統一（旧 `.geojson-*` から移行済み）
 
-## 注意事項
+## SEO / 共有用メタデータ
 
-- `src/assets/` に残っている `react.svg` / `vite.svg` / `hero.png` は未使用
-- `src/App.css` と `src/index.css` は Vite テンプレートの残骸（未使用）
+- `index.html` に Open Graph / Twitter Card / canonical / JSON-LD（SoftwareApplication）を設定
+- OG 画像は `/csv-doctor-pix.png`（公開ドメインを絶対 URL で参照）
+- `public/robots.txt` と `public/sitemap.xml` を配置
+- 公開ドメイン: `https://csv-doctor.surreal.tools`（Cloudflare Pages カスタムドメイン）
+
+## アセット
+
+- `public/csv-doctor-pix.png`: メインロゴ（1024×934 PNG、Hero / README / OG 画像で共用）
+- `public/favicon.png` / `public/apple-touch-icon.png`: ロゴから生成（中央正方形クロップ）
+- `public/icons.svg`: SVG スプライト。`github-icon` は `currentColor` で塗りつぶしを継承
