@@ -154,6 +154,22 @@ File (Shift_JIS / UTF-8)
 
 ---
 
+## 埋め込み
+
+任意のウェブサイトに iframe で埋め込めます。処理はすべて訪問者のブラウザ内で完結し、ファイルはサーバーに送信されません。
+
+```html
+<iframe
+  src="https://csv-doctor.surreal.tools/"
+  width="100%"
+  height="800"
+  style="border: 1px solid #e0e0e0; border-radius: 6px;"
+  title="CSV Doctor"
+></iframe>
+```
+
+---
+
 ## ライセンス
 
 [MIT License](./LICENSE) © 2026 lavalse

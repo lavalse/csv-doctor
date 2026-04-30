@@ -154,6 +154,22 @@ This project was built with [Claude Code](https://claude.com/claude-code), Anthr
 
 ---
 
+## Embedding
+
+CSV Doctor can be embedded in any website. All processing stays in the visitor's browser — files never reach a server.
+
+```html
+<iframe
+  src="https://csv-doctor.surreal.tools/"
+  width="100%"
+  height="800"
+  style="border: 1px solid #e0e0e0; border-radius: 6px;"
+  title="CSV Doctor"
+></iframe>
+```
+
+---
+
 ## License
 
 [MIT License](./LICENSE) © 2026 lavalse

@@ -104,6 +104,7 @@ detectEncoding → decodeFile → normalizeText → detectDelimiter
 - OG 画像は `/csv-doctor-pix.png`（公開ドメインを絶対 URL で参照）
 - `public/robots.txt` と `public/sitemap.xml` を配置
 - 公開ドメイン: `https://csv-doctor.surreal.tools`（Cloudflare Pages カスタムドメイン）
+- iframe 埋め込み許可（`public/_headers` の CSP `frame-ancestors *`、X-Frame-Options なし）
 
 ## アセット
 
